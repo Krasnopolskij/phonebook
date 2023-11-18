@@ -1,1 +1,1 @@
-console.loh('hi')
+console.log('hi')
