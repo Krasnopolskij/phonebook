@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru" class="no-js">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Вход в систему</title>
+    <link rel="stylesheet" type="text/css"  href="../styles/style_for_login.css">
+    <script type="module" src=""></script> 
+</head>
+<body>
+    <div id="header">
+        <img id="phone-icon" src="../images/phone-icon.png" alt="phone-icon">
+        <h1 id="main-header">Телефонный справочник</h1>
+        <div id="login">
+            <a class="login-link" href="/login">Войти в систему</a>
+            <a class="login-link" href="/registration">Зарегистрироваться</a>
+        </div>
+    </div>
+    
+    <div id="container">
+        <form id="login-form" method="post">
+            <div class="form">
+                <h2>Вход</h2>
+                <div class="input-form">
+                    <input type="email" placeholder="E-MAIL" required>
+                    <input type="password" placeholder="Пароль" required>
+                </div>
+                <p id="warning"></p>
+                <button type="submit" id="button">Войти</button>
+            </div>
+        </form>
+    </div>
+    
+</body>
+</html>
