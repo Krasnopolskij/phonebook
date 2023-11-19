@@ -1,7 +1,9 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const fs = require('fs');
-// const jwtMethods = require('./services/jwt_methods');
+const jwtMethods = require('./services/jwt_methods');
+const bd = require('./services/bd_operations');
+
 
 const port = 8080;
 const app = express(); // объект приложения
@@ -35,42 +37,43 @@ app.get('/registration', (request, response) => {
     response.sendFile(__dirname + '/views/registration.html');
 });
 
-app.get('/home', (request, response) => {
+app.get('/home', jwtMethods.decodeAccessToken, (request, response) => {
     try {
-        //response.cookie('login', request.user.login);
+        response.cookie('login', request.user.login);
         response.sendFile(__dirname + '/views/index.html');
     } catch (error) {
         console.log(error);
     }
 });
 
-// // обработка post-запроса на авторизацию
-// app.post('/login', (request, response) => {
-//     try {
-//         const login = request.body.login;
-//         const hash = request.body.password;
+// обработка post-запроса на авторизацию
+app.post('/login', (request, response) => {
+    try {
+        console.log(request.body)
+        const login = request.body.login;
+        const hash = request.body.password;
 
-//         bd.checkAuth(login, hash, bdResponse => {
-//             if (bdResponse.message == 'success_auth') {
-//                 // генерация токена
-//                 const token = jwtMethods.generateAccessToken(
-//                     bdResponse.id,
-//                     bdResponse.login,
-//                     bdResponse.user_group
-//                 );
-//                 // запись токена в куки и отправка сообщения об успешной авторизации
-//                 console.log('Авторизация пройдена');
-//                 response.cookie('token', `Bearer ${token}`, {
-//                     httpOnly: true
-//                 });
-//                 response.json({ message: 'success_auth'})
-//             }
-//             else response.json(bdResponse);
-//         })    
-//     } catch (error) {
-//         console.log(error);
-//     }
-// });
+        bd.checkAuth(login, hash, bdResponse => {
+            if (bdResponse.message == 'success_auth') {
+                // генерация токена
+                const token = jwtMethods.generateAccessToken(
+                    bdResponse.id,
+                    bdResponse.login,
+                    bdResponse.user_group
+                );
+                // запись токена в куки и отправка сообщения об успешной авторизации
+                console.log('Авторизация пройдена');
+                response.cookie('token', `Bearer ${token}`, {
+                    httpOnly: true
+                });
+                response.json({ message: 'success_auth'})
+            }
+            else response.json(bdResponse);
+        })    
+    } catch (error) {
+        console.log(error);
+    }
+});
 
 // log-out
 app.post('/log-out', (request, response) => {
