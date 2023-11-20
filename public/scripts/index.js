@@ -1,21 +1,26 @@
 const md5 = require('md5');
-const form = document.getElementById('login-form');
-const button = document.getElementById('button');
+const Swal = require('sweetalert2')
+const subminButton = document.getElementById('sub-menu-link');
 
-// начинаем прослушивать событие отправки данных из формы
-form.addEventListener('submit', async event => {
-    //прерываем автоматическую передачу данных из формы и блокируем кнопку
-    event.preventDefault();
-    button.disabled = true;
-
-    document.getElementById('warning').innerHTML =
-        'Авторизация...';
-    const dataJson = serializeForm(event.target);
-    const hashJSON = hashData(dataJson);
-
-    //отправка данных
-    const response = await sendData(hashJSON);
-    response.json().then(data => inputResult(data));
+// начинаем прослушивать событие нажатия на кнопку
+subminButton.addEventListener('click', async event => {
+    const { value: formValues } = await Swal.fire({
+        title: "Вход в систему",
+        html: `
+          <input id="swal-input1" class="swal2-input" type="email" placeholder="E-MAIL" required>
+          <input id="swal-input2" class="swal2-input" type="password" placeholder="Пароль" required>
+        `,
+        focusConfirm: false,
+        preConfirm: async () => {
+            let dataForSend =JSON.stringify({
+                login: document.getElementById("swal-input1").value,
+                password: md5(document.getElementById("swal-input2").value)
+            });
+            //хеширование пароля и отправка данных
+            const response = await sendData(dataForSend);
+            response.json().then(data => responseProcessing(data));
+        }
+    });
 });
 
 // функция отправляет данные в виде json с помощью post
@@ -29,36 +34,32 @@ async function sendData(data) {
     });
 }
 
-// из формы достаются данные и преобразуются в json для отправки
-function serializeForm(form) {
-    const { elements } = form;
-    const array = Array.from(elements);
-
-    return JSON.stringify({
-        login: array[0].value,
-        password: array[1].value,
-    });
-}
-
-// функция хеширования
-function hashData(dataJSON) {
-    let parseData = JSON.parse(dataJSON);
-    const hash = md5(parseData.password);
-    parseData.password = hash;
-    return JSON.stringify(parseData);
-}
-
 // обработка ответа от сервера
-function inputResult(responseFromServer) {
-    console.log(responseFromServer); // для отладки
-    if (responseFromServer.message === 'success_auth') {
-        document.getElementById('warning').innerHTML = ' ';
-        window.location.pathname = '/home';
-    } else if (responseFromServer.message === 'wrong_password') {
-        document.getElementById('warning').innerHTML = 'Неверный пароль';
+function responseProcessing(response) {
+    console.log(response); // для отладки
+    if (response.message === 'success_auth') {
+        Swal.fire({
+            icon: "success",
+            title: "Авторизация пройдена!",
+            showConfirmButton: true,
+        //    timer: 1500
+        })
+        .then((result) => {
+            if (result.isConfirmed) {
+                window.location.pathname = '/home';
+            }
+        });
+    } else if (response.message === 'wrong_password') {
+        Swal.fire({
+            icon: "error",
+            title: "Авторизация не пройдена!",
+            text: "Неверный пароль",
+            });
     } else {
-        document.getElementById('warning').innerHTML =
-            'Пользователя не существует';
+        Swal.fire({
+            icon: "error",
+            title: "Авторизация не пройдена!",
+            text: "Такого пользователя не существует",
+        });
     }
-    button.disabled = false;
 }

@@ -24,6 +24,7 @@
     "jsonwebtoken": "^9.0.2",
     "md5": "^2.3.0",
     "mysql": "^2.18.1",
+    "sweetalert2": "^11.10.1",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4"
   },

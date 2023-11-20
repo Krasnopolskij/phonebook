@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../styles/style.css">
+    <script type="module" src="../scripts/bundle.js"></script> 
     <title>Телефонный справочник</title>
 </head>
 <body>
@@ -11,16 +12,15 @@
         <img id="phone-icon" src="../images/phone-icon.png" alt="phone-icon">
         <h1 id="main-header">Телефонный справочник</h1>
         <div id="login">
-            <a class="login-link" href="/login">Войти в систему</a>
-            <a class="login-link" href="/registration">Зарегистрироваться</a>
+            <a class="login-link" href="/login">Выйти из системы</a>
         </div>
     </div>
 
     <div id="container">
-        <div id="sub-menu">
-            <a id="sub-menu-link" href="/login">Войдите в систему, чтобы пользоваться ресурсом!</a>
+        <div class="sub-menu">
+            <button class="sub-menu" id="sub-menu-link" type="button" href="/login">Войдите в систему, чтобы пользоваться ресурсом!</button>
         </div>
-        <img id="access-denied" src="../images/red-access-railings.png" alt="access-denied">
+        <!-- <img id="access-denied" src="../images/red-access-railings.png" alt="access-denied"> -->
     </div>
 
 </body>

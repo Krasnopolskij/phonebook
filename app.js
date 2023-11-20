@@ -33,14 +33,14 @@ app.get('/login', (request, response) => {
     response.sendFile(__dirname + '/views/login.html');
 });
 
-app.get('/registration', (request, response) => {
-    response.sendFile(__dirname + '/views/registration.html');
-});
+// app.get('/registration', (request, response) => {
+//     response.sendFile(__dirname + '/views/registration.html');
+// });
 
 app.get('/home', jwtMethods.decodeAccessToken, (request, response) => {
     try {
         response.cookie('login', request.user.login);
-        response.sendFile(__dirname + '/views/index.html');
+        response.sendFile(__dirname + '/views/home.html');
     } catch (error) {
         console.log(error);
     }

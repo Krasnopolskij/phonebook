@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="ru" class="no-js">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Вход в систему</title>
-    <link rel="stylesheet" type="text/css"  href="../styles/style_for_login.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles/style.css">
     <script type="module" src="../scripts/bundle.js"></script> 
+    <title>Телефонный справочник</title>
 </head>
 <body>
     <div id="header">
@@ -16,20 +16,13 @@
             <a class="login-link" href="/registration">Зарегистрироваться</a>
         </div>
     </div>
-    
+
     <div id="container">
-        <form id="login-form" method="post">
-            <div class="form">
-                <h2>Вход</h2>
-                <div class="input-form">
-                    <input type="email" placeholder="E-MAIL" required>
-                    <input type="password" placeholder="Пароль" required>
-                </div>
-                <p id="warning"></p>
-                <button type="submit" id="button">Войти</button>
-            </div>
-        </form>
+        <div class="sub-menu">
+            <button class="sub-menu" id="sub-menu-link" type="button" href="/login">Войдите в систему, чтобы пользоваться ресурсом!</button>
+        </div>
+        <img id="access-denied" src="../images/red-access-railings.png" alt="access-denied">
     </div>
-    
+
 </body>
 </html>
