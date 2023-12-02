@@ -1,6 +1,6 @@
 const md5 = require('md5');
 const Swal = require('sweetalert2')
-const subminButton = document.getElementById('sub-menu-link');
+const subminButton = document.getElementById('login');
 
 // начинаем прослушивать событие нажатия на кнопку
 subminButton.addEventListener('click', async event => {

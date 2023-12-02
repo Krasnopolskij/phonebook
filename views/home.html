@@ -1,27 +1,59 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../styles/style.css">
-    <script type="module" src="../scripts/bundle.js"></script> 
-    <title>Телефонный справочник</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../styles/style.css">
+  <title>Телефонный онлайн-справочник компании N</title>
 </head>
 <body>
-    <div id="header">
-        <img id="phone-icon" src="../images/phone-icon.png" alt="phone-icon">
-        <h1 id="main-header">Телефонный справочник</h1>
-        <div id="login">
-            <a class="login-link" href="/login">Выйти из системы</a>
-        </div>
-    </div>
 
-    <div id="container">
-        <div class="sub-menu">
-            <button class="sub-menu" id="sub-menu-link" type="button" href="/login">Войдите в систему, чтобы пользоваться ресурсом!</button>
-        </div>
-        <!-- <img id="access-denied" src="../images/red-access-railings.png" alt="access-denied"> -->
+  <header>
+    <div class="logo">
+      <img src="../images/logo22_negate.png" alt="Логотип">
     </div>
+    <div class="site-info">
+      <h1>Онлайн-справочник</h1>
+      <p>Телефонный справочник компании N</p>
+    </div>
+    <div class="user-panel">
+      <p>Вы вошли как:</p>
+      <a id="login" href="#">Выйти</a>
+    </div>
+  </header>
 
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Поиск">
+    <button class="custom-button" onclick="searchContacts()">Найти по номеру</button>
+    <button class="custom-button" onclick="searchContacts()">Найти по имени</button>
+    <button class="custom-button" onclick="searchContacts()">Найти по отделу</button>
+  </div>
+
+  <div id="main-container">
+    <main>
+      <table id="contactsTable">
+        <tr>
+          <th>Имя</th>
+          <th>Номер</th>
+          <th>Email</th>
+          <th>Отдел</th>
+        </tr>
+      </table>
+      <div id="paginationButtons"></div>
+    </main>
+    <div id="change-rows-per-page">
+      <p>Количество строк на странице:</p>
+      <button class="custom-button" onclick="changerowsPerPage(5)">5</button>
+      <button class="custom-button" onclick="changerowsPerPage(10)">10</button>
+      <button class="custom-button" onclick="changerowsPerPage(15)">15</button>
+      <button class="custom-button" onclick="changerowsPerPage(20)">20</button>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2023 Компания N</p>
+  </footer>
+
+  <script src="../scripts/show_table.js"></script>
 </body>
 </html>
