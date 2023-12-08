@@ -33,6 +33,14 @@ app.get('/login', (request, response) => {
     response.sendFile(__dirname + '/views/login.html');
 });
 
+app.get('/get-info', (request, response) => {
+    bd.getInfo(bdResponse => {
+        console.log(JSON.stringify(bdResponse));
+        response.send(JSON.stringify(bdResponse));
+    })
+});
+
+
 // app.get('/registration', (request, response) => {
 //     response.sendFile(__dirname + '/views/registration.html');
 // });

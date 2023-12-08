@@ -7,7 +7,7 @@ const pool = mysql.createPool({
     host: 'localhost',
     user: 'mysql',
     password: 'mysql',
-    database: 'test',
+    database: 'kursovaya',
     dateStrings: true
 });
 
@@ -15,7 +15,7 @@ const pool = mysql.createPool({
 module.exports.checkAuth = function (login, hash, callback) {
     let bdResponse;
     pool.query(
-        'SELECT * FROM users WHERE email = ?',
+        'SELECT * FROM accounts WHERE email = ?',
         login,
         function (error, results, fields) {
             if (error) throw error;
@@ -40,6 +40,33 @@ module.exports.checkAuth = function (login, hash, callback) {
         }
     );
 }
+
+
+module.exports.getInfo = function(callback)
+{
+    pool.query(
+        `SELECT name, phone, email, department_name  FROM staff JOIN departments ON staff.department_id=departments.id ORDER BY staff.id;`,
+        function (error, results, fields) {
+            if (error) {
+                console.log('Ошибка');
+                console.log(error);
+            }
+            let bdResponse = []
+            results.forEach(row => {
+                // bdResponse.push(`{name: "${row.name}", phone: "${row.phone}", email: "${row.email}", department: "${row.department_name}"}`);
+                bdResponse.push(JSON.stringify({
+                    name: row.name,
+                    phone: row.phone,
+                    email: row.email,
+                    department: row.department_name
+                }))
+            });
+            callback(bdResponse);
+        }
+    );
+}
+
+
 
 // // фиксация времени успешной авторизации в бд
 // function fixAuth(results) {
