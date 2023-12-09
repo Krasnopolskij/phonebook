@@ -1,11 +1,9 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
-const fs = require('fs');
 const jwtMethods = require('./services/jwt_methods');
 const bd = require('./services/bd_operations');
 
-
-const port = 8080;
+const port = 8000;
 const app = express(); // объект приложения
 
 // запуск сервера
@@ -35,20 +33,22 @@ app.get('/login', (request, response) => {
 
 app.get('/get-info', (request, response) => {
     bd.getInfo(bdResponse => {
-        console.log(JSON.stringify(bdResponse));
+        // console.log(JSON.stringify(bdResponse));
         response.send(JSON.stringify(bdResponse));
     })
 });
 
-
-// app.get('/registration', (request, response) => {
-//     response.sendFile(__dirname + '/views/registration.html');
-// });
-
 app.get('/home', jwtMethods.decodeAccessToken, (request, response) => {
     try {
         response.cookie('login', request.user.login);
-        response.sendFile(__dirname + '/views/home.html');
+        if (request.user.role == 'admin') {
+            response.sendFile(__dirname + '/views/home-admin.html');
+        }
+        else {
+            response.sendFile(__dirname + '/views/home.html');
+        }
+        
+        console.log('\nrequest.user (decoded token):\n',request.user)
     } catch (error) {
         console.log(error);
     }
@@ -57,20 +57,21 @@ app.get('/home', jwtMethods.decodeAccessToken, (request, response) => {
 // обработка post-запроса на авторизацию
 app.post('/login', (request, response) => {
     try {
-        console.log(request.body)
+        console.log('\nreques body:\n', request.body)
         const login = request.body.login;
         const hash = request.body.password;
 
         bd.checkAuth(login, hash, bdResponse => {
             if (bdResponse.message == 'success_auth') {
+                console.log('\nbdResponse\n', bdResponse)
                 // генерация токена
                 const token = jwtMethods.generateAccessToken(
-                    bdResponse.id,
-                    bdResponse.login,
-                    bdResponse.user_group
+                    bdResponse.acc_id,
+                    bdResponse.email,
+                    bdResponse.role
                 );
                 // запись токена в куки и отправка сообщения об успешной авторизации
-                console.log('Авторизация пройдена');
+                console.log('\nSuccessful authorization!');
                 response.cookie('token', `Bearer ${token}`, {
                     httpOnly: true
                 });
@@ -89,5 +90,13 @@ app.post('/log-out', (request, response) => {
     response.clearCookie('login');
     response.redirect('/login');
 });
+
+app.post('/delete', jwtMethods.decodeAccessToken, (request, response) => {
+    email = request.body.email;
+    bd.delete(email, bdResponse => {
+        response.json(bdResponse);
+        console.log(bdResponse);
+    })
+})
 
 start_server();

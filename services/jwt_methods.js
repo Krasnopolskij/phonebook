@@ -4,12 +4,12 @@ const jwt = require('jsonwebtoken');
 const secretKey = 'test_secret_key_dgsN57g8r1sFGVgd';
 
 // генерация токена
-module.exports.generateAccessToken = function (id, login, user_group) {
+module.exports.generateAccessToken = function (id, login, role) {
     // данные, закодированные в токене
     payload = {
         id,
-        login
-        //user_group
+        login,
+        role
     };
     return jwt.sign(payload, secretKey);    // время жизни токена пока не настроено
 };
@@ -17,7 +17,7 @@ module.exports.generateAccessToken = function (id, login, user_group) {
 // middleware для проверки токена, приходящего с клиента
 module.exports.decodeAccessToken = function (request, response, next) {
     try {
-        console.log(request.cookies.token)
+        console.log('token:\n', request.cookies.token)
         const token = request.cookies.token.split(' ')[1];
         decodedToken = jwt.verify(token, secretKey);
         request.user = decodedToken;

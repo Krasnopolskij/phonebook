@@ -23,7 +23,7 @@ header {
   text-align: center;
 }
 
-.user-panel a {
+#user-panel a {
   color: #fff;
   text-decoration: none;
 }
@@ -106,4 +106,52 @@ footer {
 
 #change-rows-per-page p {
   display: inline-block;
+}
+
+.show-context-menu {
+  position: relative;
+  display: block;
+  visibility: hidden;
+  margin-left: auto;
+  margin-right: 0;
+  background: url(../images/edit-icon.png) no-repeat top right;
+  height: 20px;
+  width: 20px;
+  border: none;
+}
+
+.td-with-button{
+  display: flex;
+}
+
+#context-menu {
+  display: none;
+  position: absolute;
+  width: 100px;
+  z-index: 10;
+  background-color: #f2f2f2; 
+  border: 1px solid #333; 
+  padding: 5px;
+  -moz-box-shadow: 5px 2px 10px rgba(0,0,0,0.5); 
+  -webkit-box-shadow: 5px 2px 10px rgba(0,0,0,0.5); 
+  box-shadow: 5px 2px 10px rgba(0,0,0,0.5); 
+  border-radius: 7px;
+  padding: 0%;
+}
+
+#edit-button, #delete-button {
+  width: 100px;
+  background-color: #f2f2f2; 
+  border: none;
+  transition: background .2s ease-in-out;
+  padding: 5px;
+  border-radius: 7px;
+}
+
+#edit-button:hover {
+  background-color: #d9d9d9;
+}
+
+#delete-button:hover {
+  background-color: #d9d9d9;
 }

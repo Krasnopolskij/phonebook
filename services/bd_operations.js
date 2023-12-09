@@ -19,19 +19,18 @@ module.exports.checkAuth = function (login, hash, callback) {
         login,
         function (error, results, fields) {
             if (error) throw error;
-            console.log('results\n', results)
+            console.log('\nresults from bd\n', results)
             // если results не содержит данных
             if (results.length < 1) {
                 bdResponse = { message: 'user_not_found' };
             }
             // если пользователь найден и хеши паролей совпали
             else if (results[0].hash == hash) {
-                //fixAuth(results);  
                 bdResponse = { 
                     message: 'success_auth',
-                    id: results[0].id,
-                    login: results[0].login
-                    //ser_group: results[0].user_group
+                    acc_id: results[0].acc_id,
+                    email: results[0].email,
+                    role: results[0].role
                  };
             } else {
                 bdResponse = { message: 'wrong_password' };
@@ -66,7 +65,23 @@ module.exports.getInfo = function(callback)
     );
 }
 
-
+module.exports.delete = function(email, callback)
+{
+    pool.query(
+        `DELETE FROM staff WHERE email = ?;`,
+        email,
+        function (error, results, fields) {
+            let bdResponse;
+            if (error) {
+                console.log('Ошибка');
+                console.log(error);
+                bdResponse = {message: 'error'};
+            }
+            else bdResponse = {message: 'success'};
+            callback(bdResponse);
+        }
+    );
+}
 
 // // фиксация времени успешной авторизации в бд
 // function fixAuth(results) {
