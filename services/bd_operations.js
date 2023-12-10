@@ -83,6 +83,47 @@ module.exports.delete = function(email, callback)
     );
 }
 
+module.exports.insert = function(data, callback)
+{
+    console.log('data to insert\n', data);
+    let bdResponse;
+    pool.query(
+        'INSERT INTO staff (name, phone, email, department_id) VALUES (?, ?, ?, ?);',
+        [
+            data.name,
+            data.phone,
+            data.email,
+            Number(data.department_id)
+        ],
+        function (error, results, fields) {
+            if (error) {
+                console.log(error);
+                bdResponse = {message: "error"};
+                callback(bdResponse);
+            }
+            else {
+                pool.query(
+                    'INSERT INTO accounts VALUES ((SELECT id FROM staff WHERE email = ?), ?, ?, ?);',
+                    [
+                        data.email,
+                        data.email,
+                        data.hash,
+                        data.role
+                    ],
+                    function (error, results, fields) {
+                        if (error) {
+                            console.log(error);
+                            bdResponse = {message: "error"};
+                        }
+                        else bdResponse = {message: "success"};
+                        callback(bdResponse);
+                    }
+                );
+            }
+        }
+    );
+}
+
 // // фиксация времени успешной авторизации в бд
 // function fixAuth(results) {
 //     date = new Date();
@@ -104,13 +145,13 @@ module.exports.delete = function(email, callback)
 // module.exports.fixUpload = function(id, filedata) {
 //     date = new Date();
 //     pool.query(
-//         'INSERT INTO uploaded_files (user_id, original_name, loading_time, hash) VALUES (?, ?, ?, ?);',
-//         [
-//             id,
-//             filedata.originalname,
-//             date,
-//             md5(fs.readFileSync(filedata.path, 'utf-8')),
-//         ],
+        // 'INSERT INTO uploaded_files (user_id, original_name, loading_time, hash) VALUES (?, ?, ?, ?);',
+        // [
+        //     id,
+        //     filedata.originalname,
+        //     date,
+        //     md5(fs.readFileSync(filedata.path, 'utf-8')),
+        // ],
 //         // callback для отладки
 //         function (error, results, fields) {
 //             if (error) {

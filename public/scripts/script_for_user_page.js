@@ -42,6 +42,7 @@ fetch('/get-info', {
 
 //изменение пагинации
 function changerowsPerPage(count) {
+    currentPage = 1;
     rowsPerPage = count;
     displayContacts(contacts);
 }

@@ -19,6 +19,12 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/app.js"
-        }
+        },
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "Attach to Port",
+            "port": 9229
+            },
     ]
 }

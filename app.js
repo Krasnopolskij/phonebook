@@ -94,9 +94,23 @@ app.post('/log-out', (request, response) => {
 app.post('/delete', jwtMethods.decodeAccessToken, (request, response) => {
     email = request.body.email;
     bd.delete(email, bdResponse => {
-        response.json(bdResponse);
         console.log(bdResponse);
+        response.json(bdResponse);
     })
+})
+
+app.post('/insert', jwtMethods.decodeAccessToken, (request, response) => {
+    let data = Object.values(request.body);
+    let invalidData = false;
+    for (let i = 0; i < 5; i++) {
+        if (data[i].length < 2)
+            invalidData = true; 
+    }
+
+    if (!invalidData) 
+        bd.insert(request.body, bdResponse => response.json(bdResponse));
+    else
+        response.json({message: 'error'})
 })
 
 start_server();

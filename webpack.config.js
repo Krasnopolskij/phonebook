@@ -1,7 +1,7 @@
 const path = require('path')
 
 module.exports = {
-  entry: './public/scripts/edit-db.js',
+  entry: './public/scripts/script_for_admin_page.js',
   module: {
     rules: [
       { test: /\.(js)$/, use: 'babel-loader' }

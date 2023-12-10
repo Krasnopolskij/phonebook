@@ -28,6 +28,7 @@
     <button class="custom-button" onclick="searchContacts()">Найти по номеру</button>
     <button class="custom-button" onclick="searchContacts()">Найти по имени</button>
     <button class="custom-button" onclick="searchContacts()">Найти по отделу</button>
+    <button class="custom-button" id="new-row">Добавить запись в таблицу</button>
   </div>
 
   <div id="main-container">
@@ -44,10 +45,10 @@
     </main>
     <div id="change-rows-per-page">
       <p>Количество строк на странице:</p>
-      <button class="custom-button" onclick="changerowsPerPage(5)">5</button>
-      <button class="custom-button" onclick="changerowsPerPage(10)">10</button>
-      <button class="custom-button" onclick="changerowsPerPage(15)">15</button>
-      <button class="custom-button" onclick="changerowsPerPage(20)">20</button>
+      <button class="custom-button change-rows-but">5</button>
+      <button class="custom-button change-rows-but">10</button>
+      <button class="custom-button change-rows-but">15</button>
+      <button class="custom-button change-rows-but">20</button>
     </div>
   </div>
 
@@ -60,7 +61,7 @@
     <button id="delete-button">Удалить</button>
   </div>
 
-  <script src="../scripts/script_for_admin_page.js"></script>
+  <!-- <script src="../scripts/script_for_admin_page.js"></script> -->
   <script src="../scripts/bundle_2.js"></script>
 </body>
 </html>

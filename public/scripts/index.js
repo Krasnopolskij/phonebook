@@ -4,12 +4,13 @@ const subminButton = document.getElementById('login');
 
 // начинаем прослушивать событие нажатия на кнопку
 subminButton.addEventListener('click', async event => {
-    const { value: formValues } = await Swal.fire({
+    const { value: formValues } = Swal.fire({
         title: "Вход в систему",
         html: `
           <input id="swal-input1" class="swal2-input" type="email" placeholder="E-MAIL" required>
           <input id="swal-input2" class="swal2-input" type="password" placeholder="Пароль" required>
         `,
+        confirmButtonColor: "#555",
         focusConfirm: false,
         preConfirm: async () => {
             let dataForSend =JSON.stringify({
@@ -42,6 +43,7 @@ function responseProcessing(response) {
             icon: "success",
             title: "Авторизация пройдена!",
             showConfirmButton: true,
+            confirmButtonColor: "#555",
         //    timer: 1500
         })
         .then((result) => {
@@ -54,12 +56,14 @@ function responseProcessing(response) {
             icon: "error",
             title: "Авторизация не пройдена!",
             text: "Неверный пароль",
+            confirmButtonColor: "#555",
             });
     } else {
         Swal.fire({
             icon: "error",
             title: "Авторизация не пройдена!",
             text: "Такого пользователя не существует",
+            confirmButtonColor: "#555",
         });
     }
 }
