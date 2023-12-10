@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../styles/style.css">
+  <title>Телефонный онлайн-справочник компании N</title>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <img src="../images/logo22_negate.png" alt="Логотип">
+    </div>
+    <div class="site-info">
+      <h1>Онлайн-справочник</h1>
+      <p>Телефонный справочник компании N</p>
+    </div>
+    <div id="user-panel">
+      <p>Вы вошли как: &nbsp</p>
+      <p id="current-user"></p>
+      <a id="log-out" href="#">Выйти</a>
+    </div>
+  </header>
+
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Поиск">
+    <button class="custom-button" onclick="searchContacts()">Найти по номеру</button>
+    <button class="custom-button" onclick="searchContacts()">Найти по имени</button>
+    <button class="custom-button" onclick="searchContacts()">Найти по отделу</button>
+    <button class="custom-button" id="new-row">Добавить запись в таблицу</button>
+  </div>
+
+  <div id="main-container">
+    <main>
+      <table id="contactsTable">
+        <tr>
+          <th>Имя</th>
+          <th>Номер</th>
+          <th>Email</th>
+          <th>Отдел</th>
+        </tr>
+      </table>
+      <div id="paginationButtons"></div>
+    </main>
+    <div id="change-rows-per-page">
+      <p>Количество строк на странице:</p>
+      <button class="custom-button change-rows-but">5</button>
+      <button class="custom-button change-rows-but">10</button>
+      <button class="custom-button change-rows-but">15</button>
+      <button class="custom-button change-rows-but">20</button>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2023 Компания N</p>
+  </footer>
+
+  <div id="context-menu">
+    <button id="edit-button">Редактировать запись</button>
+    <button id="delete-button">Удалить</button>
+  </div>
+
+  <!-- <script src="../scripts/script_for_admin_page.js"></script> -->
+  <script src="../scripts/bundle_2.js"></script>
+</body>
+</html>
