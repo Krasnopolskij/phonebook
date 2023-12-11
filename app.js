@@ -99,7 +99,7 @@ app.post('/delete', jwtMethods.decodeAccessToken, (request, response) => {
     })
 })
 
-app.post('/insert', jwtMethods.decodeAccessToken, (request, response) => {
+app.post('/insert-edit', jwtMethods.decodeAccessToken, (request, response) => {
     let data = Object.values(request.body);
     let invalidData = false;
     for (let i = 0; i < 5; i++) {
@@ -107,10 +107,14 @@ app.post('/insert', jwtMethods.decodeAccessToken, (request, response) => {
             invalidData = true; 
     }
 
-    if (!invalidData) 
-        bd.insert(request.body, bdResponse => response.json(bdResponse));
-    else
+    if (invalidData || request.body.hash == 'd41d8cd98f00b204e9800998ecf8427e')
         response.json({message: 'error'})
+    else {
+        if (request.body.type == 'insert')
+            bd.insert(request.body, bdResponse => response.json(bdResponse));
+        else 
+            bd.edit(request.body, bdResponse => response.json(bdResponse));
+    }
 })
 
 start_server();

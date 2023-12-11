@@ -124,6 +124,48 @@ module.exports.insert = function(data, callback)
     );
 }
 
+module.exports.edit = function(data, callback)
+{
+    console.log('data to edit\n', data);
+    let bdResponse;
+    pool.query(
+        'UPDATE staff SET name = ?, phone = ?, email = ?, department_id = ? WHERE email = ?',
+        [
+            data.name,
+            data.phone,
+            data.email,
+            Number(data.department_id),
+            data.old_email
+        ],
+        function (error, results, fields) {
+            if (error) {
+                console.log(error);
+                bdResponse = {message: "error"};
+                callback(bdResponse);
+            }
+            else {
+                pool.query(
+                    'UPDATE accounts SET email = ?, hash = ?, role = ? WHERE email = ?',
+                    [
+                        data.email,
+                        data.hash,
+                        data.role,
+                        data.old_email
+                    ],
+                    function (error, results, fields) {
+                        if (error) {
+                            console.log(error);
+                            bdResponse = {message: "error"};
+                        }
+                        else bdResponse = {message: "success"};
+                        callback(bdResponse);
+                    }
+                );
+            }
+        }
+    );
+}
+
 // // фиксация времени успешной авторизации в бд
 // function fixAuth(results) {
 //     date = new Date();
