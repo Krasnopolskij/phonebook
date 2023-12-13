@@ -1,8 +1,7 @@
 const mysql = require('mysql');
 const md5 = require('md5');
-const fs = require('fs');
 
-// данные для подключения к mysql (удалённый сервер на db4free.net)
+// данные для подключения к mysql
 const pool = mysql.createPool({
     host: 'localhost',
     user: 'mysql',

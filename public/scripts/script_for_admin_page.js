@@ -6,6 +6,8 @@ const insertButton = document.getElementById("new-row");
 const Swal = require("sweetalert2");
 const md5 = require('md5');
 
+const common = require("./common")
+
 let contacts = [];
 let currentPage = 1;
 let rowsPerPage = 10;
