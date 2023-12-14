@@ -1,64 +1,42 @@
 const logOut = document.getElementById('log-out');
-
-//удалить, це не потрiбно
-function searchContacts() {
-    let input, filter, table, tr, td, i, txtValue;
-    input = document.getElementById('searchInput');
-    filter = input.value.toUpperCase();
-    table = document.getElementById('contactsTable');
-    tr = table.getElementsByTagName('tr');
-
-    for (i = 1; i < tr.length; i++) {
-        td = tr[i].getElementsByTagName('td');
-        for (let j = 0; j < td.length; j++) {
-            let cell = td[j];
-            if (cell) {
-                txtValue = cell.textContent || cell.innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    tr[i].style.display = '';
-                    break;
-                } else {
-                    tr[i].style.display = 'none';
-                }
-            }
-        }
-    }
-}
+const searchByNumber = document.getElementById('search-by-number');
+const searchByName = document.getElementById('search-by-name');
+const searchByDep = document.getElementById('search-by-dep');
+const searchForm = document.getElementById('search-form');
 
 let contacts = [];
 let currentPage = 1;
 let rowsPerPage = 10;
 
 // запрос на получение данных с сервера
-fetch('/get-info', {
-    method: 'GET',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-})
+function getInfo() {
+	fetch('/get-info', {
+    	method: 'GET',
+    	headers: {
+      	'Content-Type': 'application/json',
+    	},
+  	})
     .then((response) => response.json())
-    .then((data) => parseData(data))
-    .then((data) => displayContacts(data));
+    .then((data) => {
+		contacts = data;
+      	displayContacts(contacts);
+      	displayPagination(contacts);
+      	changePage(currentPage);
+    });
+}
+getInfo();
 
 //изменение пагинации
 function changerowsPerPage(count) {
-    currentPage = 1;
     rowsPerPage = count;
-    displayContacts(contacts);
-}
-
-// преобразование строк в массиве в объекты js
-function parseData(data) {
-    data.forEach((row) => {
-        contacts.push(JSON.parse(row));
-    });
-    return contacts;
+	displayContacts(contacts, 1);
+	displayPagination(contacts);
 }
 
 // заполнение таблицы
-displayContacts = function (contacts) {
+displayContacts = function (contacts, page = currentPage) {
     let table = document.getElementById('contactsTable');
-    let start = (currentPage - 1) * rowsPerPage;
+    let start = (page - 1) * rowsPerPage;
     let end = start + rowsPerPage;
     let paginatedContacts = contacts.slice(start, end);
     table.innerHTML =
@@ -72,10 +50,10 @@ displayContacts = function (contacts) {
           <td>${contact.name}</td>
           <td>${contact.phone}</td>
           <td>${contact.email}</td>
-          <td>${contact.department}</td>
+          <td>${contact.department_name}</td>
         </tr>`;
     }
-    displayPagination(contacts);
+   // displayPagination(contacts);
 }
 
 // показать кнопки пагинации
@@ -94,10 +72,13 @@ function displayPagination(contacts) {
     document.getElementById('paginationButtons').innerHTML = paginationButtons;
 }
 
+// сменить страницу в таблице
 function changePage(page) {
-    currentPage = page;
-    displayContacts(contacts);
+	currentPage = page;
+	displayContacts(contacts);
+	displayPagination(contacts);
 }
+
 
 // log-out
 logOut.addEventListener('click', async () => {
@@ -114,3 +95,36 @@ const login = document.cookie
     .replace('%40', '@');
 document.getElementById('current-user').innerHTML = login;
 console.log(login);
+
+
+
+// обработчики для кнопок поиска
+searchByNumber.addEventListener('click', () => search('phone'))
+searchByName.addEventListener('click', () => search('name'))
+searchByDep.addEventListener('click', () => search('department_name'))
+
+async function search(searchType) {
+	if (searchForm.value != '') {
+		await fetch('/search', {
+			method: 'POST',
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				searchType: searchType,
+				searchValue: searchForm.value
+			})
+		})
+		.then((response) => response.json())
+		.then((data) => {
+			contacts = data;
+			console.log(contacts)
+			displayContacts(contacts);
+			displayPagination(contacts);
+		})
+	}
+	else {
+		contacts = [];
+		getInfo();
+	}
+}
