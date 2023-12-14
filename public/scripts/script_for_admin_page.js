@@ -1,12 +1,15 @@
-const contextMenu = document.getElementById("context-menu");
-const logOut = document.getElementById("log-out");
-const editButton = document.getElementById("edit-button");
-const deleteButton = document.getElementById("delete-button");
-const insertButton = document.getElementById("new-row");
-const Swal = require("sweetalert2");
-const md5 = require('md5');
+const contextMenu = document.getElementById('context-menu');
+const logOut = document.getElementById('log-out');
+const editButton = document.getElementById('edit-button');
+const deleteButton = document.getElementById('delete-button');
+const insertButton = document.getElementById('new-row');
+const searchByNumber = document.getElementById('search-by-number');
+const searchByName = document.getElementById('search-by-name');
+const searchByDep = document.getElementById('search-by-dep');
+const searchForm = document.getElementById('search-form');
 
-const common = require("./common")
+const Swal = require('sweetalert2');
+const md5 = require('md5');
 
 let contacts = [];
 let currentPage = 1;
@@ -14,17 +17,17 @@ let rowsPerPage = 10;
 
 // запрос на получение данных с сервера
 function getInfo() {
-	fetch("/get-info", {
-    	method: "GET",
+	fetch('/get-info', {
+    	method: 'GET',
     	headers: {
-      	"Content-Type": "application/json",
+      	'Content-Type': 'application/json',
     	},
   	})
     .then((response) => response.json())
-    .then((data) => parseData(data))
     .then((data) => {
-      	displayContacts(data);
-      	displayPagination(data);
+		contacts = data;
+      	displayContacts(contacts);
+      	displayPagination(contacts);
       	changePage(currentPage);
     });
 }
@@ -39,15 +42,18 @@ function changerowsPerPage(count) {
 
 // преобразование строк в массиве в объекты js
 function parseData(data) {
-	data.forEach((row) => {
-		contacts.push(JSON.parse(row));
-	});
-	return contacts;
+	// data.forEach((row) => {
+	// 	contacts.push(JSON.parse(row));
+	// });
+	// return contacts;
+	console.log(data)
+	console.log('по индексу ', data[1], typeof(data), typeof(data[1]))
+
 }
 
 // заполнение таблицы
 displayContacts = function (contacts, page = currentPage) {
-	let table = document.getElementById("contactsTable");
+	let table = document.getElementById('contactsTable');
 	let start = (page - 1) * rowsPerPage;
 	let end = start + rowsPerPage;
 	let paginatedContacts = contacts.slice(start, end);
@@ -64,7 +70,7 @@ displayContacts = function (contacts, page = currentPage) {
 			<td>${contact.email}</td>
 			<td>
 				<div class="td-with-button">
-				<div>${contact.department} </div>
+				<div>${contact.department_name} </div>
 				<button class="show-context-menu" type="button"></button>
 				</div>
 			</td>
@@ -241,8 +247,8 @@ async function insertData(mainTitle, successTitle, errorTitle, type, showData=fa
 	const { value: formValues } = await Swal.fire({
 		title: mainTitle,
 		html: `
-		<input id="swal-input1" class="swal2-input" value="${currentName}" placeholder="Имя" required>
-		<input id="swal-input2" class="swal2-input" value="${currentPhone}" placeholder="Телефон" required>
+		<input id="swal-input1" class="swal2-input" value="${currentName}" placeholder="Иван Иванов" required>
+		<input id="swal-input2" class="swal2-input" value="${currentPhone}" placeholder="111-11-11" required>
 		<input id="swal-input3" class="swal2-input" value="${currentEmail}" type="email" placeholder="E-MAIL" required>
 		<input id="swal-input4" class="swal2-input" type="password" placeholder="Пароль для аккаунта" required>
 		<select class="swal2-select" id="swal-select" name="departments">
@@ -313,4 +319,35 @@ async function insertData(mainTitle, successTitle, errorTitle, type, showData=fa
 		  	}
 		});
 	}	
+}
+
+// обработчики для кнопок поиска
+searchByNumber.addEventListener('click', () => search('phone'))
+searchByName.addEventListener('click', () => search('name'))
+searchByDep.addEventListener('click', () => search('department_name'))
+
+async function search(searchType) {
+	if (searchForm.value != '') {
+		await fetch('/search', {
+			method: 'POST',
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				searchType: searchType,
+				searchValue: searchForm.value
+			})
+		})
+		.then((response) => response.json())
+		.then((data) => {
+			contacts = data;
+			console.log(contacts)
+			displayContacts(contacts);
+			displayPagination(contacts);
+		})
+	}
+	else {
+		contacts = [];
+		getInfo();
+	}
 }
