@@ -34,7 +34,7 @@ app.get('/login', (request, response) => {
 app.get('/get-info', (request, response) => {
     bd.getInfo(bdResponse => {
         // console.log(JSON.stringify(bdResponse));
-        response.send(JSON.stringify(bdResponse));
+        response.send(bdResponse);
     })
 });
 
@@ -91,6 +91,7 @@ app.post('/log-out', (request, response) => {
     response.redirect('/login');
 });
 
+// обработка запроса на удаление строк
 app.post('/delete', jwtMethods.decodeAccessToken, (request, response) => {
     email = request.body.email;
     bd.delete(email, bdResponse => {
@@ -99,18 +100,39 @@ app.post('/delete', jwtMethods.decodeAccessToken, (request, response) => {
     })
 })
 
-app.post('/insert', jwtMethods.decodeAccessToken, (request, response) => {
-    let data = Object.values(request.body);
-    let invalidData = false;
-    for (let i = 0; i < 5; i++) {
-        if (data[i].length < 2)
-            invalidData = true; 
-    }
+// обработка запроса на добавление/редактирование строк
+app.post('/insert-edit', jwtMethods.decodeAccessToken, (request, response) => {
+    // let data = Object.values(request.body);
+    // let invalidData = false;
+    // for (let i = 0; i < 5; i++) {
+    //     if (data[i].length < 2)
+    //         invalidData = true; 
+    // }
 
-    if (!invalidData) 
-        bd.insert(request.body, bdResponse => response.json(bdResponse));
-    else
+    let is_valid = validate(request.body.name, request.body.phone, request.body.email);
+
+    if (!is_valid || request.body.hash == 'd41d8cd98f00b204e9800998ecf8427e')
         response.json({message: 'error'})
+    else {
+        if (request.body.type == 'insert')
+            bd.insert(request.body, bdResponse => response.json(bdResponse));
+        else 
+            bd.edit(request.body, bdResponse => response.json(bdResponse));
+    }
 })
+
+app.post('/search', jwtMethods.decodeAccessToken, (request, response) => {
+    bd.search(request.body, bdResponse => {
+        console.log('от базы\n', bdResponse);
+        response.send(bdResponse);
+    })
+})
+
+function validate(name, phone, email) {
+    nameReg = /^[а-яА-ЯёЁ]+ [а-яА-ЯёЁ]+$/;
+    phoneReg = /^[1-9]{3}-[1-9]{2}-[1-9]{2}$/;
+    emailReg = /[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+/;
+    return nameReg.test(name) && phoneReg.test(phone) && emailReg.test(email);
+}
 
 start_server();
