@@ -7,6 +7,7 @@ const searchByNumber = document.getElementById('search-by-number');
 const searchByName = document.getElementById('search-by-name');
 const searchByDep = document.getElementById('search-by-dep');
 const searchForm = document.getElementById('search-form');
+const showLogsButton = document.getElementById('show-logs');
 
 const Swal = require('sweetalert2');
 const md5 = require('md5');
@@ -51,7 +52,7 @@ function parseData(data) {
 
 }
 
-// заполнение таблицы
+// заполнение таблицы контактов
 displayContacts = function (contacts, page = currentPage) {
 	let table = document.getElementById('contactsTable');
 	let start = (page - 1) * rowsPerPage;
@@ -96,6 +97,10 @@ displayContacts = function (contacts, page = currentPage) {
 		});
   	}
 };
+
+
+
+
 
 // показать контекстное меню
 function showContextMenu(event) {
@@ -273,10 +278,10 @@ async function insertData(mainTitle, successTitle, errorTitle, type, showData=fa
 		preConfirm: () => {
 			return [
 				{
-				name: document.getElementById("swal-input1").value,
-				phone: document.getElementById("swal-input2").value,
-				email: document.getElementById("swal-input3").value,
-				hash: md5(document.getElementById("swal-input4").value),
+				name: document.getElementById("swal-input1").value.trim(),
+				phone: document.getElementById("swal-input2").value.trim(),
+				email: document.getElementById("swal-input3").value.trim(),
+				hash: md5(document.getElementById("swal-input4").value.trim()),
 				role: "user",
 				department_id: document.getElementById("swal-select").value,
 				type: type,
@@ -351,3 +356,7 @@ async function search(searchType) {
 		getInfo();
 	}
 }
+
+// showLogsButton.addEventListener('click', async () => {
+
+// })
