@@ -1,7 +1,7 @@
 const mysql = require('mysql2');
 const md5 = require('md5');
 
-// данные для подключения к mysql
+// данные для подключения к БД
 const pool = mysql.createPool({
 	host: 'localhost',
 	user: 'admin',

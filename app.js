@@ -31,6 +31,7 @@ app.get('/login', (request, response) => {
     response.sendFile(__dirname + '/views/login.html');
 });
 
+// обработка запроса от клиента
 app.get('/get-info', (request, response) => {
     bd.getInfo(bdResponse => {
         response.send(bdResponse);
