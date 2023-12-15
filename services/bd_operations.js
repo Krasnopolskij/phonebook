@@ -40,7 +40,8 @@ module.exports.checkAuth = function (login, hash, callback) {
 
 module.exports.getInfo = function (callback) {
 	pool.query(
-		`SELECT name, phone, email, department_name  FROM staff JOIN departments ON staff.department_id=departments.id ORDER BY staff.id;`,
+		`SELECT name, phone, email, department_name  FROM staff JOIN departments ON ` + 
+		`staff.department_id=departments.id ORDER BY staff.id;`,
 		function (error, results, fields) {
 			if (error) {
 				console.log('\nerror in query\n\n', error.sqlMessage,'\n', error.sql);
