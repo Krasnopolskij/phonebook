@@ -4,8 +4,8 @@ const md5 = require('md5');
 // данные для подключения к mysql
 const pool = mysql.createPool({
 	host: 'localhost',
-	user: 'mysql',
-	password: 'mysql',
+	user: 'admin',
+	password: 'admin',
 	database: 'kursovaya'
 });
 
@@ -43,22 +43,41 @@ module.exports.getInfo = function (callback) {
 		`SELECT name, phone, email, department_name  FROM staff JOIN departments ON staff.department_id=departments.id ORDER BY staff.id;`,
 		function (error, results, fields) {
 			if (error) {
-				console.log('Ошибка');
-				console.log(error);
+				console.log('\nerror in query\n\n', error.sqlMessage,'\n', error.sql);
 			}
 			let bdResponse = JSON.stringify(results);
-			// let bdResponse = [];
-			// results.forEach((row) => {
-			// 	// bdResponse.push(`{name: "${row.name}", phone: "${row.phone}", email: "${row.email}", department: "${row.department_name}"}`);
-			// 	bdResponse.push(
-			// 		JSON.stringify({
-			// 			name: row.name,
-			// 			phone: row.phone,
-			// 			email: row.email,
-			// 			department: row.department_name,
-			// 		})
-			// 	);
-			// });
+			callback(bdResponse);
+		}
+	);
+};
+
+module.exports.getAuthLogs = function (callback) {
+	pool.query(
+		`SELECT auth_log.id, email, DATE_FORMAT(auth_date, '%d-%m-%Y %H:%i:%s') ` + 
+		`as date FROM staff JOIN auth_log ON staff.id=auth_log.id ORDER BY date DESC;`,
+		function (error, results, fields) {
+			if (error) {
+				console.log('\nerror in query\n\n', error.sqlMessage,'\n', error.sql);
+			}
+			let bdResponse = JSON.stringify(results);
+			callback(bdResponse);
+		}
+	);
+};
+
+module.exports.getChangeLogs = function (callback) {
+	pool.query(
+		`WITH merged AS (SELECT change_log.id as id, email as current_email, ` + 
+		`change_type, changed_by, DATE_FORMAT(change_date, '%d-%m-%Y %H:%i:%s') ` + 
+		`as change_date  FROM staff RIGHT JOIN change_log ON ` +
+		`staff.id=change_log.id) SELECT merged.id, current_email, change_type, ` + 
+		`changed_by, email as admin_email, change_date FROM merged JOIN staff ON ` + 
+		`merged.changed_by=staff.id ORDER BY change_date DESC;`,
+		function (error, results, fields) {
+			if (error) {
+				console.log('\nerror in query\n\n', error.sqlMessage,'\n', error.sql);
+			}
+			let bdResponse = JSON.stringify(results);
 			callback(bdResponse);
 		}
 	);
@@ -71,42 +90,13 @@ module.exports.delete = function (email, callback) {
 		function (error, results, fields) {
 			let bdResponse;
 			if (error) {
-				console.log('Ошибка');
-				console.log(error);
+				console.log('\nerror in query\n\n', error.sqlMessage,'\n', error.sql);
 				bdResponse = { message: 'error' };
 			} else bdResponse = { message: 'success' };
 			callback(bdResponse);
 		}
 	);
 };
-
-// module.exports.insert = function (data, callback) {
-// 	console.log('data to insert\n', data);
-// 	let bdResponse;
-// 	pool.query(
-// 		'INSERT INTO staff (name, phone, email, department_id) VALUES (?, ?, ?, ?);',
-// 		[data.name, data.phone, data.email, Number(data.department_id)],
-// 		function (error, results, fields) {
-// 			if (error) {
-// 				console.log(error);
-// 				bdResponse = { message: 'error' };
-// 				callback(bdResponse);
-// 			} else {
-// 				pool.query(
-// 					'INSERT INTO accounts VALUES ((SELECT id FROM staff WHERE email = ?), ?, ?, ?);',
-// 					[data.email, data.email, data.hash, data.role],
-// 					function (error, results, fields) {
-// 						if (error) {
-// 							console.log(error);
-// 							bdResponse = { message: 'error' };
-// 						} else bdResponse = { message: 'success' };
-// 						callback(bdResponse);
-// 					}
-// 				);
-// 			}
-// 		}
-// 	);
-// };
 
 module.exports.insert = function (data, callback) {
 	console.log('\ndata to insert\n', data);

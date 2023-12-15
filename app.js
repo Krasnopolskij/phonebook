@@ -33,7 +33,18 @@ app.get('/login', (request, response) => {
 
 app.get('/get-info', (request, response) => {
     bd.getInfo(bdResponse => {
-        // console.log(JSON.stringify(bdResponse));
+        response.send(bdResponse);
+    })
+});
+
+app.get('/get-auth-logs', (request, response) => {
+    bd.getAuthLogs(bdResponse => {
+        response.send(bdResponse);
+    })
+});
+
+app.get('/get-change-logs', (request, response) => {
+    bd.getChangeLogs(bdResponse => {
         response.send(bdResponse);
     })
 });
@@ -96,7 +107,6 @@ app.post('/log-out', (request, response) => {
 app.post('/delete', jwtMethods.decodeAccessToken, (request, response) => {
     email = request.body.email;
     bd.delete(email, bdResponse => {
-        console.log(bdResponse);
         response.json(bdResponse);
     })
 })

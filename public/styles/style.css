@@ -155,3 +155,7 @@ footer {
 #delete-button:hover {
   background-color: #d9d9d9;
 }
+
+#back-button {
+  visibility: hidden;
+}
