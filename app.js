@@ -141,7 +141,7 @@ app.post('/insert-edit', jwtMethods.decodeAccessToken, (request, response) => {
 
 app.post('/search', jwtMethods.decodeAccessToken, (request, response) => {
     bd.search(request.body, bdResponse => {
-        console.log('от базы\n', bdResponse);
+        //console.log('от базы\n', bdResponse);
         response.send(bdResponse);
     })
 })
