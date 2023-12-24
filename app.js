@@ -31,9 +31,21 @@ app.get('/login', (request, response) => {
     response.sendFile(__dirname + '/views/login.html');
 });
 
+// обработка запроса от клиента
 app.get('/get-info', (request, response) => {
     bd.getInfo(bdResponse => {
-        // console.log(JSON.stringify(bdResponse));
+        response.send(bdResponse);
+    })
+});
+
+app.get('/get-auth-logs', (request, response) => {
+    bd.getAuthLogs(bdResponse => {
+        response.send(bdResponse);
+    })
+});
+
+app.get('/get-change-logs', (request, response) => {
+    bd.getChangeLogs(bdResponse => {
         response.send(bdResponse);
     })
 });
@@ -75,7 +87,8 @@ app.post('/login', (request, response) => {
                 response.cookie('token', `Bearer ${token}`, {
                     httpOnly: true
                 });
-                response.json({ message: 'success_auth'})
+                response.json({ message: 'success_auth'});
+                bd.auth_log(bdResponse.acc_id);
             }
             else response.json(bdResponse);
         })    
@@ -95,44 +108,55 @@ app.post('/log-out', (request, response) => {
 app.post('/delete', jwtMethods.decodeAccessToken, (request, response) => {
     email = request.body.email;
     bd.delete(email, bdResponse => {
-        console.log(bdResponse);
         response.json(bdResponse);
     })
 })
 
 // обработка запроса на добавление/редактирование строк
 app.post('/insert-edit', jwtMethods.decodeAccessToken, (request, response) => {
-    // let data = Object.values(request.body);
-    // let invalidData = false;
-    // for (let i = 0; i < 5; i++) {
-    //     if (data[i].length < 2)
-    //         invalidData = true; 
-    // }
-
+    // проверка присланных данных
     let is_valid = validate(request.body.name, request.body.phone, request.body.email);
 
     if (!is_valid || request.body.hash == 'd41d8cd98f00b204e9800998ecf8427e')
         response.json({message: 'error'})
     else {
-        if (request.body.type == 'insert')
-            bd.insert(request.body, bdResponse => response.json(bdResponse));
-        else 
-            bd.edit(request.body, bdResponse => response.json(bdResponse));
+        if (request.body.type == 'insert') {
+            bd.insert(request.body, bdResponse => {
+                response.json(bdResponse);
+                // фиксация в change_log
+                if (bdResponse.message == 'success')
+                    bd.change_log(request.body.email, request.user.id, request.body.type);
+            });
+        }
+        else {
+            bd.edit(request.body, bdResponse => {
+                response.json(bdResponse);
+                // фиксация в change_log
+                if (bdResponse.message == 'success')
+                    bd.change_log(request.body.email, request.user.id, request.body.type);
+            });
+        }
     }
 })
 
 app.post('/search', jwtMethods.decodeAccessToken, (request, response) => {
     bd.search(request.body, bdResponse => {
-        console.log('от базы\n', bdResponse);
+        //console.log('от базы\n', bdResponse);
         response.send(bdResponse);
     })
 })
 
 function validate(name, phone, email) {
-    nameReg = /^[а-яА-ЯёЁ]+ [а-яА-ЯёЁ]+$/;
-    phoneReg = /^[1-9]{3}-[1-9]{2}-[1-9]{2}$/;
-    emailReg = /[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+/;
-    return nameReg.test(name) && phoneReg.test(phone) && emailReg.test(email);
+    let nameReg = /^[а-яА-ЯёЁ]+ [а-яА-ЯёЁ]+$/;
+    let phoneReg = /^[1-9]{3}-[1-9]{2}-[1-9]{2}$/;
+    let emailReg = /[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+/;
+    let name_is_valid = nameReg.test(name);
+    let phone_is_valid = phoneReg.test(phone);
+    let email_is_valid = emailReg.test(email);
+    if (!name_is_valid) console.log('invalid name');
+    if (!phone_is_valid) console.log('invalid phone');
+    if (!email_is_valid) console.log('invalid email');
+    return name_is_valid && phone_is_valid && email_is_valid;
 }
 
 start_server();

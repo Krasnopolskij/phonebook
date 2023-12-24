@@ -7,6 +7,9 @@ const searchByNumber = document.getElementById('search-by-number');
 const searchByName = document.getElementById('search-by-name');
 const searchByDep = document.getElementById('search-by-dep');
 const searchForm = document.getElementById('search-form');
+const showLogsButton = document.getElementById('show-logs');
+const showLogsAuthButton = document.getElementById('show-logs-auth');
+const backButton = document.getElementById('back-button')
 
 const Swal = require('sweetalert2');
 const md5 = require('md5');
@@ -29,30 +32,20 @@ function getInfo() {
       	displayContacts(contacts);
       	displayPagination(contacts);
       	changePage(currentPage);
+		window.localStorage.setItem('currentTable', 'contacts');
     });
 }
 getInfo();
 
 //изменение пагинации
-function changerowsPerPage(count) {
+function changerowsPerPage(count, display=displayContacts) {
 	rowsPerPage = count;
-	displayContacts(contacts, 1);
+	display(contacts, 1);
 	displayPagination(contacts);
 }
 
-// преобразование строк в массиве в объекты js
-function parseData(data) {
-	// data.forEach((row) => {
-	// 	contacts.push(JSON.parse(row));
-	// });
-	// return contacts;
-	console.log(data)
-	console.log('по индексу ', data[1], typeof(data), typeof(data[1]))
-
-}
-
-// заполнение таблицы
-displayContacts = function (contacts, page = currentPage) {
+// заполнение таблицы контактов
+function displayContacts (contacts, page = currentPage) {
 	let table = document.getElementById('contactsTable');
 	let start = (page - 1) * rowsPerPage;
 	let end = start + rowsPerPage;
@@ -97,6 +90,65 @@ displayContacts = function (contacts, page = currentPage) {
   	}
 };
 
+
+//
+function displayLogs(change_logs, page = currentPage) {
+	let table = document.getElementById('contactsTable');
+	let start = (page - 1) * rowsPerPage;
+	let end = start + rowsPerPage;
+	let paginatedContacts = change_logs.slice(start, end);
+	table.innerHTML =
+		`<tr>
+			<th>ID изменённой строки</th>
+			<th>Текущий email</th>
+			<th>Тип изменения</th>
+			<th>ID администратора</th>
+			<th>Email администратора</th>
+			<th>Дата</th>
+		</tr>`;
+
+	for (let i = 0; i < paginatedContacts.length; i++) {
+		let log = paginatedContacts[i];
+		let row = table.insertRow(-1);
+
+		row.innerHTML = 
+		`<tr>
+			<td>${log.id}</td>
+			<td>${log.current_email}</td>
+			<td>${log.change_type}</td>
+			<td>${log.changed_by}</td>
+			<td>${log.admin_email}</td>
+			<td>${log.change_date}</td>
+		</tr>`;
+  	}
+};
+
+
+function displayAuthLogs(auth_logs, page = currentPage) {
+	let table = document.getElementById('contactsTable');
+	let start = (page - 1) * rowsPerPage;
+	let end = start + rowsPerPage;
+	let paginatedContacts = auth_logs.slice(start, end);
+	table.innerHTML =
+		`<tr>
+			<th>ID пользователя</th>
+			<th>Email (при входе)</th>
+			<th>Дата авторизации</th>
+		</tr>`;
+
+	for (let i = 0; i < paginatedContacts.length; i++) {
+		let log = paginatedContacts[i];
+		let row = table.insertRow(-1);
+
+		row.innerHTML = 
+		`<tr>
+			<td>${log.id}</td>
+			<td>${log.email}</td>
+			<td>${log.date}</td>
+		</tr>`;
+  	}
+}
+
 // показать контекстное меню
 function showContextMenu(event) {
 	contextMenu.style.left = String(Number(event.pageX) - 100) + "px";
@@ -110,8 +162,8 @@ contextMenu.addEventListener(
 );
 
 // показать кнопки пагинации
-function displayPagination(contacts) {
-	let totalPages = Math.ceil(contacts.length / rowsPerPage);
+function displayPagination(data) {
+	let totalPages = Math.ceil(data.length / rowsPerPage);
 	let paginationButtons = "";
 
 	for (let i = 1; i <= totalPages; i++) {
@@ -122,16 +174,21 @@ function displayPagination(contacts) {
 		document.getElementsByClassName("display-pagination-but")
 	);
   	displayPagBut.forEach((button) => {
-    	button.addEventListener("click", () =>
-      		changePage(Number(button.textContent))
-    	);
+    	button.addEventListener("click", () => {
+			if (window.localStorage.getItem('currentTable') == 'contacts')
+				changePage(Number(button.textContent));
+			else if (window.localStorage.getItem('currentTable') == 'change_logs')
+				changePage(Number(button.textContent), displayLogs);
+			else if (window.localStorage.getItem('currentTable') == 'auth_logs')
+				changePage(Number(button.textContent), displayAuthLogs)
+		});
   	});
 }
 
 // сменить страницу в таблице
-function changePage(page) {
+function changePage(page, display=displayContacts) {
 	currentPage = page;
-	displayContacts(contacts);
+	display(contacts);
 	displayPagination(contacts);
 }
 
@@ -157,7 +214,12 @@ changeRowsButtons = Object.values(
 );
 changeRowsButtons.forEach((button) => {
 	button.addEventListener("click", () => {
-		changerowsPerPage(Number(button.textContent));
+		if (window.localStorage.getItem('currentTable') == 'contacts')
+			changerowsPerPage(Number(button.textContent));
+		else if (window.localStorage.getItem('currentTable') == 'change_logs')
+			changerowsPerPage(Number(button.textContent), displayLogs);
+		else if (window.localStorage.getItem('currentTable') == 'auth_logs')
+			changerowsPerPage(Number(button.textContent), displayAuthLogs);
 	});
 });
 
@@ -260,6 +322,7 @@ async function insertData(mainTitle, successTitle, errorTitle, type, showData=fa
 			<option value="6">Отдел менеджмента</option>
 			<option value="7">Отдел безопасности</option>
 			<option value="8">Отдел кадров</option>
+			<option value="9">Заведующий автопарком</option>
 		</select>
 		<br><br>
 		<input id="swal-input6" name="is_admin" value=1 type="checkbox">
@@ -273,10 +336,10 @@ async function insertData(mainTitle, successTitle, errorTitle, type, showData=fa
 		preConfirm: () => {
 			return [
 				{
-				name: document.getElementById("swal-input1").value,
-				phone: document.getElementById("swal-input2").value,
-				email: document.getElementById("swal-input3").value,
-				hash: md5(document.getElementById("swal-input4").value),
+				name: document.getElementById("swal-input1").value.trim(),
+				phone: document.getElementById("swal-input2").value.trim(),
+				email: document.getElementById("swal-input3").value.trim(),
+				hash: md5(document.getElementById("swal-input4").value.trim()),
 				role: "user",
 				department_id: document.getElementById("swal-select").value,
 				type: type,
@@ -351,3 +414,54 @@ async function search(searchType) {
 		getInfo();
 	}
 }
+
+showLogsButton.addEventListener('click', async () => {
+	backButton.style.visibility = 'visible';
+	backButton.disabled = false;
+	searchForm.disabled = true;
+
+	await fetch('/get-change-logs', {
+    	method: 'GET',
+    	headers: {
+      	'Content-Type': 'application/json',
+    	},
+  	})
+    .then((response) => response.json())
+    .then((change_logs) => {
+		contacts = change_logs;
+		console.log(contacts);
+		displayLogs(contacts, 1);
+		displayPagination(contacts);
+
+		window.localStorage.setItem('currentTable', 'change_logs');
+    });
+})
+
+showLogsAuthButton.addEventListener('click', async () => {
+	backButton.style.visibility = 'visible';
+	backButton.disabled = false;
+	searchForm.disabled = true;
+
+	await fetch('/get-auth-logs', {
+    	method: 'GET',
+    	headers: {
+      	'Content-Type': 'application/json',
+    	},
+  	})
+    .then((response) => response.json())
+    .then((auth_logs) => {
+		contacts = auth_logs;
+		console.log(contacts);
+		displayAuthLogs(contacts, 1);
+		displayPagination(contacts);
+
+		window.localStorage.setItem('currentTable', 'auth_logs');
+    });
+})
+
+backButton.addEventListener('click', () => {
+	backButton.style.visibility = 'hidden';
+	backButton.disabled = true;
+	searchForm.disabled = false;
+	getInfo();
+})
