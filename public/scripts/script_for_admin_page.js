@@ -322,6 +322,7 @@ async function insertData(mainTitle, successTitle, errorTitle, type, showData=fa
 			<option value="6">Отдел менеджмента</option>
 			<option value="7">Отдел безопасности</option>
 			<option value="8">Отдел кадров</option>
+			<option value="9">Заведующий автопарком</option>
 		</select>
 		<br><br>
 		<input id="swal-input6" name="is_admin" value=1 type="checkbox">
